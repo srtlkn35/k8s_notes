@@ -3,7 +3,7 @@ set -x #echo on
 
 ########################################################################
 ## SETUP ###############################################################
-sudo apt install -y postgresql-client-common
+sudo apt-get -y install postgresql-client-common
 
 sudo curl -LJO https://raw.githubusercontent.com/srtlkn35/k8s_notes/main/postresql_setup/postgres-configmap.yaml
 sudo curl -LJO https://raw.githubusercontent.com/srtlkn35/k8s_notes/main/postresql_setup/postgres-storage.yaml
