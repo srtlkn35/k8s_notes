@@ -44,10 +44,12 @@ multipass purge
 ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/'
 ```
 ##### Replace All IP Addresses in Document
-- bc-master: 172.30.67.245
-- bc-node1: 172.30.71.219
-- mc-master: 172.30.73.2
-- mc-node1: 172.30.78.130
+- mc-master: 172.30.67.101
+- mc-node1: 172.30.67.104
+- bc-master: 172.30.67.102
+- bc-node1: 172.30.67.105
+- geo-master: 172.30.67.106
+- geo-node1: 172.30.67.219
 
 # INSTALLATIONS
 ##### Configure Master Nodes
@@ -136,26 +138,40 @@ sed -i -e 's/\r$//' barman_setup.sh
 
 # Run on Main Cluster Master Node 
 # (bmuser@bserver, username: bmuser, password: test123)
-# VAR BACKUP_SERVER: bmuser@172.30.67.245
+# VAR BACKUP_SERVER: bmuser@172.30.67.101
 sudo adduser postgres
 sudo usermod -aG sudo postgres
 ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y 2>&1 >/dev/null
-ssh-copy-id -i ~/.ssh/id_rsa.pub bmuser@172.30.67.245
-ssh bmuser@172.30.67.245 "chmod 600 ~/.ssh/authorized_keys"
+ssh-copy-id -i ~/.ssh/id_rsa.pub bmuser@172.30.67.101
+ssh bmuser@172.30.67.101 "chmod 600 ~/.ssh/authorized_keys"
 
 # RUN ON BACKUP KUBERNETES CLUSTER MASTER (bmuser@bserver, username: bmuser, password: test123)
-# VAR MAIN_SERVER: postgres@172.30.73.2
+# VAR MAIN_SERVER: postgres@172.30.67.102
 sudo adduser bmuser
 sudo usermod -aG sudo bmuser
 ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y 2>&1 >/dev/null
-ssh-copy-id -i ~/.ssh/id_rsa.pub postgres@172.30.73.2
-ssh postgres@172.30.73.2 "chmod 600 ~/.ssh/authorized_keys"
+ssh-copy-id -i ~/.ssh/id_rsa.pub postgres@172.30.67.102
+ssh postgres@172.30.67.102 "chmod 600 ~/.ssh/authorized_keys"
 
 # RUN ON GEOBACKUP KUBERNETES CLUSTER MASTER (bmuser@geobserver)
-# VAR BACKUP_SERVER: bmuser@172.30.67.245
+# VAR BACKUP_SERVER: bmuser@172.30.67.103
 sudo adduser bmuser
 sudo usermod -aG sudo bmuser
 ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y 2>&1 >/dev/null
-ssh-copy-id -i ~/.ssh/id_rsa.pub bmuser@172.30.67.245
-ssh bmuser@172.30.67.245 "chmod 600 ~/.ssh/authorized_keys"
+ssh-copy-id -i ~/.ssh/id_rsa.pub bmuser@172.30.67.103
+ssh bmuser@172.30.67.103 "chmod 600 ~/.ssh/authorized_keys"
+```
+
+##### Deploy Pod from Docker Image
+```
+sudo curl -LJO https://raw.githubusercontent.com/srtlkn35/k8s_notes/main/docker_notes/alpine-dig/alpine-dig.yaml
+
+kubectl get pods
+kubectl apply -f alpine-dig.yaml
+kubectl delete -f alpine-dig.yaml
+
+# Docker Usage
+# docker run -it srtlkn/alpine-dig curl google.com
+# docker run -it srtlkn/alpine-dig dig google.com
+# docker run -it srtlkn/alpine-dig nslookup google.com
 ```
